@@ -1,0 +1,114 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disclaimer</title>
+    <script>
+        function showDisclaimer() {
+            // Alert message for the disclaimer
+            var userResponse = confirm(
+                "DISCLAIMER: By continuing to this site, you agree to our terms and conditions.\n\nDo you accept?"
+            );
+
+            // If user accepts, proceed to the home page
+            if (userResponse) {
+                window.location.href = "home.html"; // Redirect to home page
+            } else {
+                alert("You must accept the disclaimer to continue.");
+                window.location.href = "https://www.google.com"; // Redirect to another page
+            }
+        }
+    </script>
+</head>
+<body onload="showDisclaimer()">
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disclaimer</title>
+    <style>
+        /* Full-screen overlay background */
+        #disclaimer-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* Popup content box */
+        .popup-content {
+            background: #fff;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Button style */
+        .accept-btn {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .accept-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Optional: Prevent scrolling while the disclaimer is active */
+        body.no-scroll {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="no-scroll">
+    <!-- Disclaimer Popup -->
+    <div id="disclaimer-popup">
+        <div class="popup-content">
+            <h2>Disclaimer</h2>
+            <p>
+                This website contains content intended for informational purposes only. By proceeding, you acknowledge that you have read and understood the disclaimer. 
+            </p>
+            <p>
+                If you do not accept the terms, please close this page.
+            </p>
+            <button class="accept-btn" onclick="closeDisclaimer()">Accept</button>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden until disclaimer is accepted) -->
+    <div id="main-content" style="display: none;">
+        <h1>Welcome to the Home Page</h1>
+        <p>Your website content goes here.</p>
+    </div>
+
+    <script>
+        function closeDisclaimer() {
+            // Hide the popup
+            document.getElementById('disclaimer-popup').style.display = 'none';
+            // Show the main content
+            document.getElementById('main-content').style.display = 'block';
+            // Allow scrolling
+            document.body.classList.remove('no-scroll');
+        }
+    </script>
+</body>
+</html>

@@ -16,57 +16,6 @@
             color: var(--text-light);
         }
         
-        /* Navbar Styles */
-        /* .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 5%;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 0.5px solid brown;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
-        }
-        
-        .brand-red {
-            color: var(--primary-red);
-        }
-        
-        .navbar a {
-            text-decoration: none; 
-            border: none;
-        }
-        
-        
-        .nav-links a {
-            color: var(--text-light);
-            text-decoration: none;
-            margin-left: 2rem;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-links a:hover {
-            color: var(--primary-red);
-        }
-        
-        .contact-btn {
-            background-color: var(--primary-red);
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-        }
-        
-        .contact-btn:hover {
-            background-color: #ff3333;
-            color: var(--text-light) !important;
-        } */
-
         .contact-btn {
             background-color: var(--primary-red);
             padding: 0.8rem 1.5rem;
@@ -117,7 +66,8 @@
     color: white;
     position: fixed;
     width: 100%;
-    opacity: 1000;
+    opacity: 1;
+    z-index: 1000; 
   }
   
   .main-logo {
@@ -165,21 +115,25 @@
     color: white;
   }
   
-  /* Mobile & Tablet Styles */
-  @media (max-width: 768px) {
+  
+
+  /* Mobile View */
+@media (max-width: 768px) {
     .menu-icon, .close-icon {
-      display: block; /* Show icons for small devices */
+      display: block;
+      font-size: 24px;
+      cursor: pointer;
       position: absolute;
-      right: 20px; /* Align in the same position */
+      right: 20px;
       top: 15px;
     }
   
     .close-icon {
-      display: none; /* Hide by default */
+      display: none; /* Initially hidden */
     }
   
     .nav-menu {
-      display: none; /* Hidden by default */
+      display: none; /* Initially hidden */
       flex-direction: column;
       position: absolute;
       top: 60px;
@@ -198,14 +152,13 @@
   /* Desktop & Larger Devices */
   @media (min-width: 769px) {
     .menu-icon, .close-icon {
-      display: none; /* Hide hamburger and close icons */
+      display: none; /* Hide icons for larger screens */
     }
   
     .nav-menu {
       display: flex; /* Show nav links inline */
     }
   }
-  
         
         /* Hero Section Styles */
         .hero {
@@ -244,26 +197,6 @@
             justify-content: center;
         }
         
-        /* .primary-btn, .secondary-btn {
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            border: none;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            cursor: pointer; 
-            text-align: center;
-        }
-        
-        .primary-btn {
-            background-color: var(--primary-red);
-            color: var(--text-light);
-        }
-        .primary-btn:hover {
-            background-color: #ff3333;
-        } */
-
         .primary-btn {
             padding: 1rem 2rem;
             border-radius: 25px;
@@ -328,14 +261,12 @@
             }
         
         }
-        
         @media screen and (max-width: 480px) {
             .hero h1 {
                 font-size: 2rem;
             }
         
         }
-
 
 
 
@@ -1105,7 +1036,7 @@
     color: #888;
     margin-bottom: 1.5rem;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    /* -webkit-line-clamp: 3; */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1385,6 +1316,14 @@
             color: #888;
             margin-bottom: 1.5rem;
             font-size: 0.9rem;
+        }
+        .gaplink
+        {
+            display: flex;
+            gap: 20px;
+            text-align: center;
+            justify-content: center;
+            margin: auto;
         }
 
         .social-links {

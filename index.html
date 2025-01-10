@@ -203,18 +203,16 @@
 
     <div class="insights-container" id="blogs">
         <div class="insights-header">
-            <h1>Blogs</h1>
+            <h1>Latest <span>Blogs</span></h1>
             <p>Stay updated with the latest developments in IP law and technology</p>
         </div>
-        <div class="container insights-grid" id="insightsGrid">
-            <h1>My Medium Blog Posts</h1>
-            <div id="blog-posts">
-                <p class="loading">Loading posts...</p>
-            </div>
+        <div class="blog-grid" id="blog-posts">
+            <!-- Posts will be dynamically inserted here -->
+            <p class="loading">Loading posts...</p>
         </div>
     </div>
 <!--  Blog page content  -->
-<script>
+<!-- <script>
     async function fetchBlogPosts() {
         const blogContainer = document.getElementById('blog-posts');
         
@@ -286,8 +284,76 @@
         refreshButton, 
         document.getElementById('blog-posts')
     );
-</script>
+</script> -->
    <!--  -->
+<script>
+    async function fetchBlogPosts() {
+        const blogContainer = document.getElementById('blog-posts');
+        
+        try {
+            console.log('Fetching blog posts...');
+            const response = await fetch('http://localhost:3001/api/medium-feed');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const posts = await response.json();
+            console.log('Posts received:', posts);
+
+            if (!posts || posts.length === 0) {
+                blogContainer.innerHTML = `
+                    <p class="error-message">No posts found. Please check if the Medium username is correct.</p>
+                `;
+                return;
+            }
+
+            // Sort posts by date (newest first)
+            const sortedPosts = posts.sort((a, b) => 
+                new Date(b.pubDate) - new Date(a.pubDate)
+            );
+
+            blogContainer.innerHTML = sortedPosts.map(post => {
+                const date = new Date(post.pubDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                return `
+                    <div class="blog-post">
+                        <div class="blog-image">
+                            <img src="${post.thumbnail || './images/'}" alt="${post.title}">
+                        </div>
+                        <div class="blog-content">
+                            <a href="${post.link}" class="blog-title" target="_blank">
+                                ${post.title}
+                            </a>
+                            <p class="blog-date">
+                                <i class="far fa-calendar-alt"></i> ${date}
+                            </p>
+                            <a href="${post.link}" class="read-more-btn" target="_blank">
+                                Read More
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+            blogContainer.innerHTML = `
+                <p class="error-message">
+                    Error loading blog posts: ${error.message}<br>
+                    <a href="https://medium.com/@swapna_jtbb1" target="_blank">Visit Medium profile directly</a>
+                </p>
+            `;
+        }
+    }
+
+    // Initial fetch when document loads
+    document.addEventListener('DOMContentLoaded', fetchBlogPosts);
+</script>
 
     <div class="contact-container">
         <div class="contact-header">

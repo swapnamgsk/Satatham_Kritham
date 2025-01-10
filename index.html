@@ -27,9 +27,6 @@
           <a href="#contact" class="ContactNav" >Contact Us</a>
         </div>
       </nav>
-      
-      
-
     <main class="hero" id="home">
         <div class="hero-content">
             <h1>Creating Excellence in<br>
@@ -175,7 +172,6 @@
                 <span class="social-link">
                     <a href="https://www.facebook.com/story.php?story_fbid=1016501057163536&id=100064109526551&_rdr" style="color:white;"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.linkedin.com/in/s-k-murthy-6a45a15/?originalSubdomain=in" style="color:white;"><i class="fab fa-linkedin"></i></i></a>
-          
                 </span>
             </div>
         </div>
@@ -210,71 +206,88 @@
             <h1>Blogs</h1>
             <p>Stay updated with the latest developments in IP law and technology</p>
         </div>
-
-        <div id="insightsGrid" class="insights-grid">
-            <!-- Cards will be dynamically inserted here -->
+        <div class="container insights-grid" id="insightsGrid">
+            <h1>My Medium Blog Posts</h1>
+            <div id="blog-posts">
+                <p class="loading">Loading posts...</p>
+            </div>
         </div>
     </div>
-
-    <script>
-        async function fetchInsights() {
-            try {
-                const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/tag/web-development');
-                const data = await response.json();
-                
-                if (data.status === 'ok') {
-                    displayInsights(data.items.slice(0, 3)); // Display first 6 items
-                } else {
-                    throw new Error('Failed to fetch data');
-                }
-            } catch (error) {
-                document.getElementById('insightsGrid').innerHTML = `
-                    <div class="error">Failed to load insights. Please try again later.</div>
-                `;
+<!--  Blog page content  -->
+<script>
+    async function fetchBlogPosts() {
+        const blogContainer = document.getElementById('blog-posts');
+        
+        try {
+            console.log('Fetching blog posts...');
+            const response = await fetch('http://localhost:3001/api/medium-feed');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        }
+            
+            const posts = await response.json();
+            console.log('Posts received:', posts);
 
-        function displayInsights(items) {
-            const grid = document.getElementById('insightsGrid');
-            grid.innerHTML = items.map(item => {
-                // Extract first image from content if available
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = item.content;
-                const firstImage = tempDiv.querySelector('img');
-                const imageUrl = firstImage ? firstImage.src : 'default-image.jpg';
-
-                // Format date
-                const date = new Date(item.pubDate);
-                const formattedDate = date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-
-                return `
-                    <div class="insight-card">
-                        <div class="card-image">
-                            <img src="${imageUrl}" alt="${item.title}" onerror="this.src='default-image.jpg'">
-                        </div>
-                        <div class="card-content">
-                            <div class="card-meta">
-                                <span>${formattedDate}</span>
-                                <span>${item.categories[0] || 'General'}</span>
-                            </div>
-                            <h3 class="card-title">${item.title}</h3>
-                            <p class="card-description">${item.description.replace(/<[^>]*>/g, '').slice(0, 150)}...</p>
-                            <a href="${item.link}" class="read-more" target="_blank">
-                                Read More →
-                            </a>
-                        </div>
-                    </div>
+            if (!posts || posts.length === 0) {
+                blogContainer.innerHTML = `
+                    <p class="error-message">No posts found. Please check if the Medium username is correct.</p>
                 `;
-            }).join('');
-        }
+                return;
+            }
 
-        // Load insights when page loads
-        document.addEventListener('DOMContentLoaded', fetchInsights);
-    </script>
+            // Sort posts by date (newest first)
+            const sortedPosts = posts.sort((a, b) => 
+                new Date(b.pubDate) - new Date(a.pubDate)
+            );
+
+            blogContainer.innerHTML = sortedPosts.map(post => `
+                <div class="blog-post">
+                    <h2><a href="${post.link}" target="_blank">${post.title}</a></h2>
+                    <p class="pub-date">Published: ${new Date(post.pubDate).toLocaleString()}</p>
+                    <p>${post.description}</p>
+                </div>
+            `).join('');
+            
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+            blogContainer.innerHTML = `
+                <p class="error-message">
+                    Error loading blog posts: ${error.message}<br>
+                    <a href="https://medium.com/@swapna_jtbb1" target="_blank">Visit Medium profile directly</a>
+                </p>
+            `;
+        }
+    }
+
+    // Initial fetch
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchBlogPosts();
+        
+        // Auto-refresh every 5 minutes
+        setInterval(fetchBlogPosts, 5 * 60 * 1000);
+    });
+
+    // Add refresh button
+    const refreshButton = document.createElement('button');
+    refreshButton.textContent = 'Refresh Posts';
+    refreshButton.style.cssText = `
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #0066cc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    `;
+    refreshButton.onclick = fetchBlogPosts;
+    document.querySelector('.container').insertBefore(
+        refreshButton, 
+        document.getElementById('blog-posts')
+    );
+</script>
+   <!--  -->
 
     <div class="contact-container">
         <div class="contact-header">
@@ -397,7 +410,8 @@
                 </div>
             </div>
         </div>
-    </footer>   
+    </footer>  
+     
     <script>
         const testimonials = [
             {
@@ -553,10 +567,7 @@
               closeIcon.style.display = 'block'; // Show close button
               menuIcon.style.display = 'none'; // Hide hamburger
             }
-          }
-          
-          
-          
+          }      
     </script>
     
 </body>

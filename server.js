@@ -1,46 +1,36 @@
-const express = require("express");
-const axios = require("axios");
-const { parseStringPromise } = require("xml2js");
+const express = require('express');
+const axios = require('axios');
+const cheerio = require('cheerio');
+const cors = require('cors');
 
 const app = express();
+const port = 3001;
 
-// Serve static files from the "public" folder
-app.use(express.static("public"));
+app.use(cors());
 
-app.get("/medium-posts", async (req, res) => {
-  try {
-    const rssFeedUrl = "https://medium.com/feed/@swapna-jtbb";
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssFeedUrl)}`;
-
-    // Fetch the RSS feed
-    const response = await axios.get(proxyUrl);
-    const xml = response.data.contents;
-
-    // Parse the XML feed
-    const result = await parseStringPromise(xml);
-    const items = result.rss?.channel?.[0]?.item || [];
-
-    if (!items.length) {
-      res.json([]);
-      return;
+app.get('/api/medium-feed', async (req, res) => {
+    try {
+        const mediumUsername = 'swapna_jtbb1';
+        const response = await axios.get(`https://medium.com/feed/@${mediumUsername}`);
+        const $ = cheerio.load(response.data, { xmlMode: true });
+        
+        const posts = [];
+        $('item').each((i, item) => {
+            posts.push({
+                title: $(item).find('title').text(),
+                link: $(item).find('link').text(),
+                pubDate: $(item).find('pubDate').text(),
+                description: $(item).find('description').text()
+            });
+        });
+        
+        res.json(posts);
+    } catch (error) {
+        console.error('Error fetching Medium posts:', error);
+        res.status(500).json({ error: 'Failed to fetch Medium posts' });
     }
-
-    const blogPosts = items.map((item) => ({
-      title: item.title?.[0] || "Untitled",
-      link: item.link?.[0] || "#",
-      pubDate: item.pubDate?.[0] || "Unknown date",
-      description: item.description?.[0] || "No description available.",
-    }));
-
-    res.json(blogPosts);
-  } catch (error) {
-    console.error("Error fetching Medium RSS feed:", error.message);
-    res.status(500).json({ error: "Failed to fetch blog posts" });
-  }
 });
 
-// Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
 });

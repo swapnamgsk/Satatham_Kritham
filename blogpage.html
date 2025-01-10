@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Medium Blog Posts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .blog-post {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .blog-post:last-child {
+            border-bottom: none;
+        }
+
+        .blog-post h2 {
+            margin-bottom: 10px;
+        }
+
+        .blog-post a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .blog-post a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #dc3545;
+            padding: 20px;
+            text-align: center;
+            background: #fff;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .pub-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Medium Blog Posts</h1>
+        <div id="blog-posts">
+            <p class="loading">Loading posts...</p>
+        </div>
+    </div>
+
+    <script>
+        async function fetchBlogPosts() {
+            const blogContainer = document.getElementById('blog-posts');
+            
+            try {
+                console.log('Fetching blog posts...');
+                const response = await fetch('http://localhost:3001/api/medium-feed');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const posts = await response.json();
+                console.log('Posts received:', posts);
+
+                if (!posts || posts.length === 0) {
+                    blogContainer.innerHTML = `
+                        <p class="error-message">No posts found. Please check if the Medium username is correct.</p>
+                    `;
+                    return;
+                }
+
+                // Sort posts by date (newest first)
+                const sortedPosts = posts.sort((a, b) => 
+                    new Date(b.pubDate) - new Date(a.pubDate)
+                );
+
+                blogContainer.innerHTML = sortedPosts.map(post => `
+                    <div class="blog-post">
+                        <h2><a href="${post.link}" target="_blank">${post.title}</a></h2>
+                        <p class="pub-date">Published: ${new Date(post.pubDate).toLocaleString()}</p>
+                        <p>${post.description}</p>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+                blogContainer.innerHTML = `
+                    <p class="error-message">
+                        Error loading blog posts: ${error.message}<br>
+                        <a href="https://medium.com/@swapna_jtbb1" target="_blank">Visit Medium profile directly</a>
+                    </p>
+                `;
+            }
+        }
+
+        // Initial fetch
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchBlogPosts();
+            
+            // Auto-refresh every 5 minutes
+            setInterval(fetchBlogPosts, 5 * 60 * 1000);
+        });
+
+        // Add refresh button
+        const refreshButton = document.createElement('button');
+        refreshButton.textContent = 'Refresh Posts';
+        refreshButton.style.cssText = `
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        `;
+        refreshButton.onclick = fetchBlogPosts;
+        document.querySelector('.container').insertBefore(
+            refreshButton, 
+            document.getElementById('blog-posts')
+        );
+    </script>
+</body>
+</html>
